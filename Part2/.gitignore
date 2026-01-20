@@ -24,3 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# My specific ignores
+Learning
+NotesFrontend
+exchange-rate
