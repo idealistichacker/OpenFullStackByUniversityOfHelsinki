@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+  "content": "User id is now included in note creation2",
+  "important": false,
+  "userId": "69761c4692904f93083beea5"
+}
