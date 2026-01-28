@@ -1,4 +1,6 @@
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -36,8 +38,39 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
+  }else {
+    // 如果没有 Token，就设为 null
+    request.token = null
+  }
+  next()
+}
+
+// 👇 新加的：用户提取器
+const userExtractor = async (request, response, next) => {
+  if (request.token) {
+    // 1. 如果有 token，尝试解码
+    // (如果 token 是伪造的或过期的，jwt.verify 会抛出错误，
+    //  会被 express-async-errors 捕获并交给 errorHandler，所以这里不用 try-catch)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    
+    // 2. 如果解码成功且有 ID，去数据库找人
+    if (decodedToken.id) {
+      request.user = await User.findById(decodedToken.id)
+    }
+  }
+
+  // 3. 继续下一个中间件
+  next()
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor,
+  userExtractor
 }

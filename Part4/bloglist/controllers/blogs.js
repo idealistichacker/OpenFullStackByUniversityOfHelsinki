@@ -4,13 +4,6 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
-  }
-  return null
-}
 
 BlogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -20,11 +13,10 @@ BlogsRouter.get('/', async (request, response) => {
 BlogsRouter.post('/', async (request, response) => {
   const body = request.body
 
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  if (!decodedToken.id) {
+  if (!request.user) {
     return response.status(401).json({ error: 'token invalid' })
   }
-  const user = await User.findById(decodedToken.id)
+  const user = await User.findById(request.user.id)
 
   if (!user) {
     return response.status(400).json({ error: 'userId missing or not valid' })
@@ -36,7 +28,7 @@ BlogsRouter.post('/', async (request, response) => {
 
   // const user = await User.find({}).limit(1)[0] // 临时使用数据库中的第一个用户作为博文的作者
   // const user = await User.findOne({}) // 直接取第一条
-  
+
   const blog = new Blog({
     ...body,
     user: user._id
@@ -54,6 +46,17 @@ BlogsRouter.post('/', async (request, response) => {
 })
 
 BlogsRouter.delete('/:id', async (request, response) => {
+  const loggingUserId = request.user.id
+  if (!loggingUserId) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+  if (blog.user.toString() !== loggingUserId.toString()) {
+    return response.status(403).json({ error: 'only the creator can delete a blog' })
+  }
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })

@@ -1,9 +1,9 @@
 POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkplcnJ5IiwiaWQiOiI2OTc3NGZkN2VjYjkxYzE4ZGVmZWQwNDAiLCJpYXQiOjE3Njk1NzcxODEsImV4cCI6MTc2OTU4MDc4MX0.bpKoxn4iJ3Sct8FyHm9NRcP-o7AovfXG14w5efstwb0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2OTc3MmM3NDNmYzE1ODAwNWI5YzdkMDIiLCJpYXQiOjE3Njk2MTUzMjUsImV4cCI6MTc2OTYxODkyNX0.E8Bo8cDcuRIwqB7bxSc6WEhdFDvvU0pqlx4HNs044rc
 
 {
-    "title": "Jerry's Blog",
+    "title": "Jerry's Blog3",
     "author": "testuser2",
     "url": "https://www.mole9630.top/",
     "likes": 5000

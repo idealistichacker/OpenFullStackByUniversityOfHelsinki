@@ -7,6 +7,7 @@ const BlogsRouter = require('./controllers/blogs')
 const UsersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 
+
 const app = express()
 
 logger.info('connecting to', config.MONGODB_URI)
@@ -23,8 +24,9 @@ mongoose
 // app.use(express.static('dist'))
 app.use(express.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor)
 
-app.use('/api/blogs', BlogsRouter)
+app.use('/api/blogs', middleware.userExtractor, BlogsRouter)
 app.use('/api/users', UsersRouter)
 app.use('/api/login', loginRouter)
 
